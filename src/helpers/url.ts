@@ -1,4 +1,4 @@
-import { isDate, isObject } from './util'
+import { isDate, isPlainObject } from './util'
 
 function encode(val: string): string {
   // 将字符进行编译，但是一些特殊字符不使用编译后的内容
@@ -44,7 +44,7 @@ export function buildURL(url: string, params?: any): string {
     values.forEach(val => {
       if (isDate(val)) {
         val = val.toISOString()
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         val = JSON.stringify(val)
       }
       // key和value都要进行编译
@@ -56,8 +56,11 @@ export function buildURL(url: string, params?: any): string {
   // 丢弃url中的hash值 ，既原本url是/base/get#hash改成/base/get
   if (serializedParams) {
     const markIndex = url.indexOf('#')
-    url = url.slice(0, markIndex)
+    if (markIndex !== -1) {
+      url = url.slice(0, markIndex)
+    }
   }
+  console.log(url)
   url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
   return url
 }
